@@ -1,0 +1,6 @@
+# Environment
+text-mae-venv/
+.DS_store
+
+# Data
+data/
