@@ -67,9 +67,12 @@ def main():
             d = ImageDraw.Draw(img)
             d.text((0, 0), chunks[i].encode('utf-8'), fill=text_color)
             img.save(os.path.join(args.output_dir, image_name))
-            text_in_images[image_name] = chunks[i]
+            key = os.path.join(output_folder, image_name)
+            text_in_images[key] = chunks[i]
         break
-    with open("text_in_images.json", "w") as write_file:
+
+    path_to_dict = os.path.join(output_folder, "text_in_images.json")
+    with open(path_to_dict, "w") as write_file:
         json.dump(text_in_images, write_file, indent=4)
 
 
