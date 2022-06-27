@@ -14,6 +14,12 @@ def insert_newline(text, cols, rows):
     return output
 
 
+def process_image_name(image_name):
+    image_name = image_name.replace(' ', '-')
+    image_name = image_name.replace('/', '-')
+    return image_name
+
+
 def main():
     parser = argparse.ArgumentParser(description="Text-to-Image generator")
     parser.add_argument("--output_dir",
@@ -44,6 +50,7 @@ def main():
     sequence_length = args.columns * args.rows
 
     dataset = load_dataset("wikipedia", "20220301.simple")
+    text_in_image = {}
     for t, (data) in enumerate(tqdm(dataset['train'])):
         text = data['text'].replace('\n', '')
         chunks = [
@@ -52,12 +59,14 @@ def main():
             for i in range(0, len(text), sequence_length)
         ]
         for i in range(len(chunks)):
-            image_name = f"{data['title'].lower()}_{i}.png"
+            image_name = f"{data['title'].lower()}-{i}.png"
+            image_name = process_image_name(image_name)
             img = Image.new('RGB', (args.img_size, args.img_size),
                             backgroud_color)
             d = ImageDraw.Draw(img)
-            d.text((0, 0), chunks[i], fill=text_color)
+            d.text((0, 0), chunks[i].encode('utf-8'), fill=text_color)
             img.save(os.path.join(args.output_dir, image_name))
+            text_in_image[image_name] = chunks[i]
         break
 
 
