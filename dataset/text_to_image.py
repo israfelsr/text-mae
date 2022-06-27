@@ -1,5 +1,6 @@
 import argparse
 import os
+import json
 from PIL import Image, ImageDraw
 from tqdm import tqdm
 
@@ -50,7 +51,7 @@ def main():
     sequence_length = args.columns * args.rows
 
     dataset = load_dataset("wikipedia", "20220301.simple")
-    text_in_image = {}
+    text_in_images = {}
     for t, (data) in enumerate(tqdm(dataset['train'])):
         text = data['text'].replace('\n', '')
         chunks = [
@@ -66,8 +67,10 @@ def main():
             d = ImageDraw.Draw(img)
             d.text((0, 0), chunks[i].encode('utf-8'), fill=text_color)
             img.save(os.path.join(args.output_dir, image_name))
-            text_in_image[image_name] = chunks[i]
+            text_in_images[image_name] = chunks[i]
         break
+    with open("text_in_images.json", "w") as write_file:
+        json.dump(text_in_images, write_file, indent=4)
 
 
 if __name__ == '__main__':
